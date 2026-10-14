@@ -1,0 +1,22 @@
+/* The small note under the title that shows the date/time read from it */
+.smart-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.smart-chip-main {
+  padding: 3px 10px;
+  border-radius: var(--radius-full, 999px);
+  background-color: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.smart-chip-note {
+  color: var(--text-muted);
+}

@@ -1,0 +1,1178 @@
+/* ==========================================================================
+   Landing page (imported by pages/Home.jsx)
+   Flat surfaces, crisp borders, no gradients or glows. Motion is used where
+   it explains something: the live clock, tasks sliding into Overdue, rows
+   folding away, the ring drawing itself. All colours come from index.css, so
+   light and dark mode both work. Nothing here changes other pages.
+   A circle field (HeroField.jsx) is fixed behind the page, and sections fade
+   in and out as you scroll (FadeMain in Home.jsx).
+   ========================================================================== */
+
+/* ---------- Themed scrollbar (app-wide) ----------
+   A see-through track with a slim thumb in the accent colour, so it follows
+   the rose theme in both light and dark mode. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--accent) 80%, var(--text-main));
+    background-clip: padding-box;
+  }
+}
+
+/* ---------- Page frame ---------- */
+.home-page.lp-page {
+  --lp-pad: clamp(20px, 5vw, 72px);
+  --lp-max: 1400px;
+  --lp-edge: max(var(--lp-pad), calc((100% - var(--lp-max)) / 2 + var(--lp-pad)));
+  /* replaces the soft pink glow that index.css paints behind the old homepage */
+  background: var(--bg-main);
+  /* Firmer outlines. The pale pink default almost vanishes against the circle
+     field, so every box on this page (cards, panels, inputs) uses a line drawn
+     from the text colour instead. It follows light and dark mode. */
+  --border-color: color-mix(in srgb, var(--text-main) 28%, transparent);
+}
+
+.home-page.lp-page .home-main {
+  max-width: none;
+  padding: 0;
+}
+
+/* Header that stays put. At the top of the page it is clear, so the circle
+   field runs right up to the edge of the screen. Once you scroll it turns into
+   frosted glass: the page slides under it, blurred, with a fine line below. */
+.home-page.lp-page .home-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 64px;
+  padding-inline: var(--lp-edge);
+  background-color: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 250ms ease, border-color 250ms ease,
+    -webkit-backdrop-filter 250ms ease, backdrop-filter 250ms ease;
+}
+
+.home-page.lp-page .home-header.is-scrolled {
+  background-color: color-mix(in srgb, var(--bg-main) 70%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  border-bottom-color: var(--border-color);
+}
+
+.home-page.lp-page .home-footer {
+  padding-inline: var(--lp-edge);
+}
+
+/* Line the fixed top bar up with the header and the page's content edge.
+   There is no box around the controls, just the buttons themselves. It is
+   centred on the 64px header whatever its height. */
+body:has(.lp-page) .topbar {
+  top: 32px;
+  transform: translateY(-50%);
+  right: max(clamp(20px, 5vw, 72px), calc((100vw - 1400px) / 2 + clamp(20px, 5vw, 72px)));
+  padding: 0;
+  gap: 10px;
+  align-items: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.lp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Hero ---------- */
+
+/* The living circle field is fixed to the screen behind the whole page. The
+   page content sits above it (z-index 1), and the field ignores the pointer,
+   so every button and field stays clickable. */
+.lp-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.home-page.lp-page .home-main,
+.home-page.lp-page .home-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* the footer is a solid strip, so its small text never sits on the circles */
+.home-page.lp-page .home-footer {
+  background-color: var(--bg-main);
+}
+
+/* Sections fade with the scroll (see FadeMain in Home.jsx), so no hairlines
+   between them: the fade and the field do the separating */
+[data-fade] {
+  will-change: opacity, transform;
+}
+
+.lp-hero {
+  width: 100%;
+  max-width: var(--lp-max);
+  margin-inline: auto;
+  padding: clamp(40px, 9vh, 96px) var(--lp-pad) clamp(96px, 18vh, 192px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
+}
+
+.lp-hero-copy h1 {
+  font-size: clamp(42px, 6.2vw, 88px);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  color: var(--text-main);
+}
+
+.lp-hero-copy p {
+  margin-top: 24px;
+  max-width: 44ch;
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.lp-hero-copy .home-cta {
+  margin-top: 32px;
+}
+
+.lp-hero-copy .home-cta-main,
+.lp-hero-copy .home-cta-alt {
+  padding: 13px 24px;
+  font-size: 15.5px;
+}
+
+.lp-hero-visual {
+  width: 100%;
+  max-width: 540px;
+  justify-self: center;
+}
+
+/* The one orchestrated moment: headline words rise out of a mask, then the
+   copy and the live card fade in behind them */
+.lp-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* extra room so descenders (y, p, g) and tight-tracked edges aren't clipped */
+  padding: 0.1em 0.08em 0.28em;
+  margin: -0.1em -0.08em -0.28em;
+}
+
+.lp-word > span {
+  display: inline-block;
+  transform: translateY(140%);
+  animation: lp-rise 720ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--i) * 70ms + 80ms);
+}
+
+.lp-fade {
+  animation: lp-fade 600ms ease both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes lp-rise {
+  to { transform: translateY(0); }
+}
+
+@keyframes lp-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ---------- Panels (hero card and every feature demo) ---------- */
+.lp-panel {
+  position: relative;
+  padding: 22px;
+  background-color: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.lp-hero-card {
+  padding: 24px;
+}
+
+.lp-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.lp-card-head strong {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  color: var(--text-main);
+}
+
+.lp-card-date {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.lp-clock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 96px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background-color: var(--accent-light);
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-live-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: currentColor;
+  animation: lp-pulse 1.4s ease-in-out infinite;
+}
+
+.lp-live-dot.is-paused {
+  animation: none;
+  opacity: 0.45;
+}
+
+@keyframes lp-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+.lp-sec + .lp-sec {
+  margin-top: 18px;
+}
+
+.lp-gap {
+  margin-top: 18px;
+}
+
+/* the dot beside "Overdue" is only red when something is overdue */
+.section-heading:not(.overdue-heading) .overdue-dot {
+  background-color: var(--border-strong);
+}
+
+/* ---------- Task rows (the real app's .task-card, plus motion) ---------- */
+.lp-wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lp-wrap-inner {
+  min-height: 0;
+}
+
+.lp-wrap.is-leaving {
+  grid-template-rows: 0fr;
+}
+
+.lp-wrap.is-leaving .lp-wrap-inner {
+  overflow: hidden;
+}
+
+.lp-wrap.is-leaving .task-card,
+.lp-wrap.is-leaving .lp-done {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+/* a task landing in a list */
+@keyframes lp-enter {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* a task that just slipped into Overdue: its row flashes red once and fades */
+@keyframes lp-flash {
+  from { background-color: var(--danger-light); }
+  to   { background-color: transparent; }
+}
+
+.task-card.lp-fresh {
+  animation: lp-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.task-card.lp-slip {
+  animation:
+    lp-enter 360ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    lp-flash 1.6s ease-out both;
+}
+
+/* completion circle: fills, then the tick draws itself */
+.lp-circle:disabled {
+  cursor: default;
+}
+
+.lp-circle.is-static {
+  pointer-events: none;
+}
+
+.lp-circle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* a one-time pulse that shows touch and keyboard visitors the circle is tappable */
+.lp-circle.is-cue {
+  animation: lp-cue 1.4s ease-out 1.6s 3;
+}
+
+.lp-tick {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+}
+
+.lp-tick.is-drawn {
+  stroke-dashoffset: 0;
+}
+
+.completion-circle.completing .lp-tick {
+  animation: lp-draw 280ms ease-out forwards;
+}
+
+/* a faint tick on hover shows what the click will do */
+.lp-circle:hover:not(.completing) .lp-tick {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 200ms ease;
+}
+
+@keyframes lp-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---------- Small shared controls ---------- */
+.lp-link {
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lp-link:hover {
+  color: var(--accent-hover);
+}
+
+.lp-link:focus-visible,
+.lp-restore:focus-visible,
+.lp-add-row:focus-visible,
+.lp-quick-item:focus-visible,
+.lp-mode:focus-visible,
+.lp-x:focus-visible,
+.lp-range:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.lp-demo-hint {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.lp-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 14px;
+}
+
+.lp-input::placeholder {
+  color: var(--text-muted);
+}
+
+.lp-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.lp-input:disabled {
+  opacity: 0.8;
+}
+
+/* a ring that pulses once or twice to point at the thing to click */
+@keyframes lp-cue {
+  0%   { box-shadow: 0 0 0 0 var(--accent-border); }
+  100% { box-shadow: 0 0 0 10px transparent; }
+}
+
+/* ---------- Hero: add-a-task box ---------- */
+.lp-add {
+  position: relative;
+  margin-top: 16px;
+}
+
+.lp-add input {
+  width: 100%;
+  padding: 11px 52px 11px 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 14px;
+}
+
+.lp-add input::placeholder {
+  color: var(--text-muted);
+}
+
+.lp-add input:focus {
+  outline: none;
+  border-style: solid;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.lp-add .sidebar-kbd {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  margin: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.lp-add:focus-within .sidebar-kbd {
+  opacity: 0;
+}
+
+/* empty state, shared by the hero and Finished */
+.lp-clear {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+}
+
+.lp-clear > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-clear strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.lp-clear > div > span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.lp-clear-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* ---------- Feature rows ---------- */
+.lp-band {
+  padding: clamp(88px, 16vh, 168px) 0;
+}
+
+.lp-row {
+  width: 100%;
+  max-width: var(--lp-max);
+  margin-inline: auto;
+  padding-inline: var(--lp-pad);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
+}
+
+/* demos that grow (Upcoming, quick add) keep the copy anchored to the top */
+.lp-row.is-top {
+  align-items: start;
+}
+
+.lp-row.is-flip .lp-row-copy {
+  order: 2;
+}
+
+.lp-row-copy h2 {
+  max-width: 14ch;
+  font-size: clamp(30px, 4vw, 54px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: var(--text-main);
+}
+
+.lp-row-copy p {
+  margin-top: 16px;
+  max-width: 42ch;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ---------- Overdue demo ---------- */
+.lp-time {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.lp-time span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.lp-time b {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+}
+
+.lp-range-wrap {
+  position: relative;
+  isolation: isolate;
+}
+
+.lp-range {
+  display: block;
+  width: 100%;
+  margin: 4px 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* tick on the track at 9:00, behind the thumb */
+.lp-range-mark {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  background-color: var(--text-muted);
+}
+
+.lp-range-scale {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.lp-range-scale span:first-child { text-align: left; }
+.lp-range-scale span:last-child  { text-align: right; }
+
+/* lists keep their height while a task moves, so nothing below jumps */
+.lp-slot {
+  min-height: 64px;
+}
+
+.lp-slot-2 {
+  min-height: 128px;
+}
+
+.lp-empty {
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+  border: 1.5px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ---------- Upcoming demo ---------- */
+.lp-day + .lp-day {
+  margin-top: 18px;
+}
+
+.lp-day-title {
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.lp-add-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 8px;
+  border: 1.5px dashed transparent;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.lp-add-row:hover {
+  border-color: var(--border-strong);
+  background-color: var(--accent-light);
+}
+
+.lp-add-row.is-cue {
+  animation: lp-cue 1.4s ease-out 2;
+}
+
+.lp-day-form {
+  margin-top: 6px;
+}
+
+/* ---------- Finished demo ---------- */
+.lp-done-list {
+  min-height: 150px;
+}
+
+.lp-done {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.lp-done-list > .lp-wrap:last-child .lp-done {
+  border-bottom: none;
+}
+
+.lp-done-check {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.lp-done-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-restore {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-full);
+  background-color: var(--accent-light);
+  color: var(--accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.lp-restore:hover {
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.lp-restore.is-cue {
+  animation: lp-cue 1.4s ease-out 2;
+}
+
+/* ---------- Stats demo ---------- */
+.lp-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+}
+
+.lp-ring {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  flex-shrink: 0;
+}
+
+.lp-ring svg {
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.lp-ring-track { stroke: var(--border-color); }
+.lp-ring-fill  { stroke: var(--accent); }
+
+.lp-ring-fill {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lp-ring-num {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+}
+
+.lp-metrics {
+  flex: 1;
+  min-width: 150px;
+  display: grid;
+  gap: 4px;
+}
+
+.lp-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.lp-metric:last-child {
+  border-bottom: none;
+}
+
+.lp-metric b {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-main);
+}
+
+.lp-replay {
+  margin-top: 14px;
+}
+
+/* ---------- Quick add demo ---------- */
+.lp-quick {
+  display: grid;
+}
+
+.lp-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-input);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.lp-quick-item + .lp-quick-item {
+  margin-top: 12px;
+}
+
+.lp-quick-item:hover {
+  border-color: var(--accent-border);
+}
+
+.lp-quick-item.is-listening {
+  border-color: var(--accent);
+}
+
+.lp-quick-text strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.lp-quick-text > span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.lp-keycap.sidebar-kbd {
+  min-width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: 15px;
+}
+
+.lp-mic {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.is-listening .lp-mic {
+  animation: lp-cue 1.2s ease-out infinite;
+}
+
+.lp-wave {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 16px;
+}
+
+.lp-wave i {
+  width: 2.5px;
+  height: 100%;
+  border-radius: 2px;
+  background-color: currentColor;
+  animation: lp-bar 900ms ease-in-out infinite;
+}
+
+.lp-wave i:nth-child(2) { animation-delay: 120ms; }
+.lp-wave i:nth-child(3) { animation-delay: 240ms; }
+.lp-wave i:nth-child(4) { animation-delay: 360ms; }
+
+@keyframes lp-bar {
+  0%, 100% { transform: scaleY(0.25); }
+  50%      { transform: scaleY(1); }
+}
+
+/* the Add Task card unfolds under the two options */
+.lp-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.lp-collapse.is-open {
+  grid-template-rows: 1fr;
+}
+
+.lp-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility 0s linear 260ms;
+}
+
+.lp-collapse.is-open .lp-collapse-inner {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.lp-quick-card {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+}
+
+.lp-quick-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lp-quick-card-head strong {
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.lp-x {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lp-x:hover {
+  background-color: var(--accent-light);
+  color: var(--accent);
+}
+
+.lp-quick-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lp-saved {
+  margin-top: 18px;
+}
+
+/* ---------- Day / night swatches (fixed colours on purpose, so both show at once) ---------- */
+.lp-modes-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.lp-mode {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--m-border);
+  border-radius: var(--radius-md);
+  background-color: var(--m-bg);
+  color: var(--m-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.lp-mode:hover {
+  transform: translateY(-2px);
+}
+
+.lp-mode.is-current {
+  box-shadow: 0 0 0 2px var(--m-accent);
+}
+
+.lp-mode b {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.lp-mode i {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 0;
+  border-top: 1px solid var(--m-border);
+  font-size: 12.5px;
+  font-style: normal;
+}
+
+.lp-mode i::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  border: 2px solid var(--m-accent);
+  border-radius: 50%;
+}
+
+.lp-mode-light { --m-bg: #ffffff; --m-border: #fbdde3; --m-text: #3b0a18; --m-accent: #e11d48; }
+.lp-mode-dark  { --m-bg: #190c11; --m-border: #43202c; --m-text: #fdeef2; --m-accent: #fb7185; }
+
+/* ---------- Final call to action: one flat block of the accent colour ---------- */
+.lp-cta {
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.lp-cta-inner {
+  max-width: var(--lp-max);
+  margin-inline: auto;
+  padding: clamp(64px, 12vh, 120px) var(--lp-pad);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px 64px;
+}
+
+.lp-cta h2 {
+  font-size: clamp(44px, 8vw, 112px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+}
+
+.lp-cta p {
+  margin-top: 20px;
+  max-width: 40ch;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.lp-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lp-cta-main,
+.lp-cta-alt {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 24px;
+  border-radius: var(--radius-btn);
+  font-size: 15.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform var(--transition-fast);
+}
+
+.lp-cta-main {
+  background-color: var(--on-accent);
+  color: var(--accent);
+}
+
+.lp-cta-alt {
+  border: 1.5px solid var(--on-accent);
+  color: var(--on-accent);
+}
+
+.lp-cta-main:hover,
+.lp-cta-alt:hover {
+  transform: translateY(-2px);
+}
+
+.lp-cta-main:focus-visible,
+.lp-cta-alt:focus-visible {
+  outline: 2px solid var(--on-accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Tablet / mobile ---------- */
+@media (max-width: 860px) {
+  .lp-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lp-hero-visual {
+    max-width: none;
+  }
+
+  .lp-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .lp-row.is-flip .lp-row-copy {
+    order: 0;
+  }
+
+  .lp-row-copy h2 {
+    max-width: none;
+  }
+
+  .lp-cta-inner {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* ---------- Reduced motion: everything is shown in its final state ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .lp-word > span {
+    animation: none;
+    transform: none;
+  }
+
+  .lp-fade,
+  .task-card.lp-fresh,
+  .task-card.lp-slip,
+  .lp-add-row.is-cue,
+  .lp-restore.is-cue,
+  .lp-circle.is-cue,
+  .is-listening .lp-mic,
+  .lp-live-dot,
+  .completion-circle.completing .lp-tick {
+    animation: none;
+  }
+
+  .completion-circle.completing .lp-tick {
+    stroke-dashoffset: 0;
+  }
+
+  .lp-wrap,
+  .lp-collapse,
+  .lp-ring-fill,
+  .lp-mode,
+  .lp-cta-main,
+  .lp-cta-alt {
+    transition: none;
+  }
+
+  .lp-mode:hover,
+  .lp-cta-main:hover,
+  .lp-cta-alt:hover {
+    transform: none;
+  }
+}

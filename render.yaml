@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: todo-app
+    runtime: node
+    plan: free
+    buildCommand: cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: DB_SSL
+        value: "true"
+      - key: DB_PORT
+        value: "4000"
+      - key: DB_NAME
+        value: todo_app
+      - key: DB_TIMEZONE
+        value: "+05:30"
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true

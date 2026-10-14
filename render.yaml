@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: todo-app
+    name: evertrack
     runtime: node
     plan: free
     buildCommand: cd frontend && npm install --include=dev && npm run build && cd ../backend && npm install

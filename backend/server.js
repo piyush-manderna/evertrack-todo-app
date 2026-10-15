@@ -36,8 +36,33 @@ app.use(express.json());
 // Health check (before sessions so pings never touch the database)
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
+// Serve the built React app (frontend/dist) in production.
+// This sits BEFORE the session middleware so the website itself always loads,
+// even if the database is slow or briefly unreachable.
+const distPath = path.join(__dirname, '../frontend/dist');
+const hasFrontend = fs.existsSync(distPath);
+if (hasFrontend) {
+  app.use(express.static(distPath));
+  // Any other page URL (e.g. refreshing /upcoming) gets the React app
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+
 // Store sessions in MySQL so they survive server restarts and sleeping
-const sessionStore = new MySQLStore({ ...dbConfig });
+const sessionStore = new MySQLStore({
+  ...dbConfig,
+  connectionLimit: 3,
+  enableKeepAlive: true,       // hosted databases drop idle connections
+  keepAliveInitialDelay: 10000,
+  maxIdle: 1,
+  idleTimeout: 30000,
+});
+sessionStore.onReady().then(
+  () => console.log('✓ Session store ready'),
+  (err) => console.error('✗ Session store failed (is the `sessions` table created?):', err.message)
+);
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -55,17 +80,6 @@ app.use(session({
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
-
-// Serve the built React app (frontend/dist) in production
-const distPath = path.join(__dirname, '../frontend/dist');
-if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
-  // Any other GET (e.g. refreshing /upcoming) gets the React app
-  app.use((req, res, next) => {
-    if (req.method !== 'GET' || req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-}
 
 // 404 handler
 app.use((req, res) => {

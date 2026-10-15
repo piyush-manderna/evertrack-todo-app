@@ -5,7 +5,6 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const dbConfig = require('./config/dbConfig');
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 
@@ -50,15 +49,12 @@ if (hasFrontend) {
   });
 }
 
-// Store sessions in MySQL so they survive server restarts and sleeping
-const sessionStore = new MySQLStore({
-  ...dbConfig,
-  connectionLimit: 3,
-  enableKeepAlive: true,       // hosted databases drop idle connections
-  keepAliveInitialDelay: 10000,
-  maxIdle: 1,
-  idleTimeout: 30000,
-});
+// Store sessions in MySQL so they survive server restarts and sleeping.
+// IMPORTANT: reuse our own pool (config/db.js). The session library builds its own
+// connection from a fixed list of options and silently drops `ssl`, which TiDB
+// requires ("Connections using insecure transport are prohibited").
+const db = require('./config/db');
+const sessionStore = new MySQLStore({ createDatabaseTable: true }, db);
 sessionStore.onReady().then(
   () => console.log('✓ Session store ready'),
   (err) => console.error('✗ Session store failed (is the `sessions` table created?):', err.message)
